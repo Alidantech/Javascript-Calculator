@@ -1,0 +1,67 @@
+
+.calculator {
+  width: 320px;
+  margin: 0 auto;
+  background-color: #f8f9fa;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.calculator-display {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  height: 60px;
+  background-color: #fff;
+  font-size: 24px;
+  font-weight: 600;
+  padding: 0 15px;
+  border-radius: 6px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+}
+
+.calculator-buttons .row {
+  display: flex;
+}
+
+.calculator-buttons .button {
+  flex: 1;
+  padding: 15px;
+  font-size: 20px;
+  text-align: center;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.calculator-buttons .button:hover {
+  background-color: #e9ecef;
+}
+
+.calculator-buttons .button:active {
+  background-color: #dee2e6;
+}
+
+.calculator-buttons .row .button:not(:last-child) {
+  margin-right: 10px;
+}
+
+.calculator-buttons .row:last-child .button {
+  flex-basis: calc(50% - 5px);
+  margin-right: 5px;
+}
+
+.calculator-buttons .row:last-child .button:nth-child(2) {
+  margin-left: 5px;
+}
+
+.calculator-buttons .row:last-child .button:last-child {
+  flex-basis: 100%;
+  margin-left: 0;
+}
+
+.calculator-buttons .row:last-child .button#zero {
+  flex-grow: 2;
+}
