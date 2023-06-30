@@ -1,67 +1,55 @@
-
-.calculator {
-  width: 320px;
-  margin: 0 auto;
-  background-color: #f8f9fa;
-  border-radius: 10px;
+#calculator {
+  background-color: #f4f4f4;
+  border-radius: 8px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
   padding: 20px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
 }
 
-.calculator-display {
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-  height: 60px;
+#display {
   background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-shadow: inset 0px 1px 3px rgba(0, 0, 0, 0.1);
+  padding: 10px;
+  margin-bottom: 10px;
   font-size: 24px;
-  font-weight: 600;
-  padding: 0 15px;
-  border-radius: 6px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-  margin-bottom: 20px;
+  text-align: right;
 }
 
-.calculator-buttons .row {
+button {
+  width: 60px;
+  height: 60px;
+  font-size: 18px;
+  border-radius: 4px;
+  margin: 5px;
+}
+
+button#equals {
+  background-color: #95a5a6;
+  color: #fff;
+  font-size: 1.5em;
+  font-weight: bold;
+  width: 100%;
+}
+
+button#clear,
+button#divide,
+button#multiply,
+button#subtract,
+button#add {
+  background-color: #3498db;
+  color: #fff;
+}
+
+button#decimal {
+  background-color: #95a5a6;
+  color: #fff;
+}
+
+
+.container {
   display: flex;
-}
-
-.calculator-buttons .button {
-  flex: 1;
-  padding: 15px;
-  font-size: 20px;
-  text-align: center;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: background-color 0.2s;
-}
-
-.calculator-buttons .button:hover {
-  background-color: #e9ecef;
-}
-
-.calculator-buttons .button:active {
-  background-color: #dee2e6;
-}
-
-.calculator-buttons .row .button:not(:last-child) {
-  margin-right: 10px;
-}
-
-.calculator-buttons .row:last-child .button {
-  flex-basis: calc(50% - 5px);
-  margin-right: 5px;
-}
-
-.calculator-buttons .row:last-child .button:nth-child(2) {
-  margin-left: 5px;
-}
-
-.calculator-buttons .row:last-child .button:last-child {
-  flex-basis: 100%;
-  margin-left: 0;
-}
-
-.calculator-buttons .row:last-child .button#zero {
-  flex-grow: 2;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
 }

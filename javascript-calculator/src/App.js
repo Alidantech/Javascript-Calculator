@@ -1,31 +1,70 @@
 import React, { useState } from 'react';
 import './App.css';
-
-const Calculator = () => {
+import { Parser } from 'expr-eval'; 
+const App = () => {
   const [display, setDisplay] = useState('0');
   const [expression, setExpression] = useState('');
 
   const handleNumberClick = (number) => {
-    if (display === '0' && number === '0') return; // Prevent leading zeros
-    setDisplay((prevDisplay) => (prevDisplay === '0' ? number : prevDisplay + number));
+    if (display === '0' || display === 'Error') {
+      setDisplay(number);
+    } else {
+      setDisplay(display + number);
+    }
+    setExpression(expression + number);
   };
 
-  const handleOperatorClick = (operator) => {
-    if (expression.slice(-1) === '-' && operator === '-') return; // Allow negative numbers
-    if (expression.slice(-1).match(/[+\-*/]/)) {
-      // Replace previous operator with the new one
-      setExpression((prevExpression) => prevExpression.slice(0, -1) + operator);
-    } else {
-      setExpression((prevExpression) => prevExpression + display + operator);
+const handleOperatorClick = (operator) => {
+  if (expression === '') {
+    // Ignore operator if expression is empty
+    if (operator === '-') {
+      // Allow minus sign as part of the expression
+      setDisplay(operator);
+      setExpression(operator);
     }
-    setDisplay('0');
-  };
+    return;
+  }
+
+  const lastCharacter = expression.slice(-1);
+  const secondLastCharacter = expression.slice(-2, -1);
+  const operators = ['+', '-', '*', '/'];
+
+  if (operator === '-' && lastCharacter === '-') {
+    // Handle consecutive negative signs
+    const newExpression = expression.slice(0, -1) + '+';
+    setDisplay(newExpression);
+    setExpression(newExpression);
+  } else if (operators.includes(lastCharacter) && operators.includes(secondLastCharacter)) {
+    // Remove the last two operators from the expression and add the new operator
+    const newExpression = expression.slice(0, -2) + operator;
+    setDisplay(newExpression);
+    setExpression(newExpression);
+  } else if (operators.includes(lastCharacter) && operator !== '-') {
+    // Remove the last operator from the expression and add the new operator
+    const newExpression = expression.slice(0, -1) + operator;
+    setDisplay(newExpression);
+    setExpression(newExpression);
+  } else if (operators.includes(lastCharacter) && operator === '-') {
+    // Evaluate the expression so far and add the new operator
+    const newExpression = expression + operator;
+    setDisplay(newExpression);
+    setExpression(newExpression);
+  } else {
+    setDisplay(expression + operator);
+    setExpression(expression + operator);
+  }
+};
+
 
   const handleDecimalClick = () => {
-    if (!display.includes('.')) {
-      setDisplay((prevDisplay) => prevDisplay + '.');
-    }
-  };
+  // Check if there is already a decimal in the current number
+  const lastNumber = expression.split(/[-+*/]/).pop();
+  if (!lastNumber.includes('.')) {
+    // Add the decimal to the display and expression
+    setDisplay(display + '.');
+    setExpression(expression + '.');
+  }
+};
 
   const handleClearClick = () => {
     setDisplay('0');
@@ -33,81 +72,143 @@ const Calculator = () => {
   };
 
   const handleEqualsClick = () => {
-    const result = eval(expression + display).toFixed(4);
-    setDisplay(result);
-    setExpression(result);
-  };
+  if (
+    expression === '' ||
+    expression.endsWith('+') ||
+    expression.endsWith('-') ||
+    expression.endsWith('*') ||
+    expression.endsWith('/')
+  ) {
+    return;
+  }
+
+  let result;
+  try {
+    const parser = new Parser();
+    const expr = parser.parse(expression);
+    result = expr.evaluate();
+    if (result === Infinity || isNaN(result)) {
+      throw new Error('Error');
+    }
+    result = Number(result.toFixed(4));
+  } catch (error) {
+    result = 'Error';
+  }
+  setDisplay(result.toString());
+  setExpression(result.toString());
+};
+
 
   return (
-    <div className="calculator">
-      <div id="display" className="calculator-display">
-        {display}
-      </div>
-      <div className="calculator-buttons">
-        <div className="row">
-          <button id="clear" className="button" onClick={handleClearClick}>
+  <div className="container d-flex align-items-center justify-content-center">
+    <div id="calculator" className="text-center">
+      <div id="display">{display}</div>
+      <div className="row">
+        <div className="col">
+          <button className="btn btn-secondary btn-lg" id="clear" onClick={handleClearClick}>
             AC
           </button>
-          <button id="divide" className="button" onClick={() => handleOperatorClick('/')}>
+        </div>
+        <div className="col">
+          <button className="btn btn-secondary btn-lg" id="divide" onClick={() => handleOperatorClick('/')}>
             /
           </button>
-          <button id="multiply" className="button" onClick={() => handleOperatorClick('*')}>
+        </div>
+        <div className="col">
+          <button className="btn btn-secondary btn-lg" id="multiply" onClick={() => handleOperatorClick('*')}>
             *
           </button>
         </div>
-        <div className="row">
-          <button id="seven" className="button" onClick={() => handleNumberClick('7')}>
-            7
-          </button>
-          <button id="eight" className="button" onClick={() => handleNumberClick('8')}>
-            8
-          </button>
-          <button id="nine" className="button" onClick={() => handleNumberClick('9')}>
-            9
-          </button>
-          <button id="subtract" className="button" onClick={() => handleOperatorClick('-')}>
-            -
-          </button>
-        </div>
-        <div className="row">
-          <button id="four" className="button" onClick={() => handleNumberClick('4')}>
-            4
-          </button>
-          <button id="five" className="button" onClick={() => handleNumberClick('5')}>
-            5
-          </button>
-          <button id="six" className="button" onClick={() => handleNumberClick('6')}>
-            6
-          </button>
-          <button id="add" className="button" onClick={() => handleOperatorClick('+')}>
+       
+      
+        <div className="col">
+          <button className="btn btn-secondary btn-lg" id="add" onClick={() => handleOperatorClick('+')}>
             +
           </button>
         </div>
-        <div className="row">
-          <button id="one" className="button" onClick={() => handleNumberClick('1')}>
-            1
+      </div>
+      <div className="row">
+      <div className="col">
+            <button className="btn btn-secondary btn-lg" id="nine" onClick={() => handleNumberClick('9')}>
+            9
+            </button>
+      </div>
+        <div className="col">
+          <button className="btn btn-secondary btn-lg" id="eight" onClick={() => handleNumberClick('8')}>
+            8
           </button>
-          <button id="two" className="button" onClick={() => handleNumberClick('2')}>
-            2
+        </div>
+         <div className="col">
+          <button className="btn btn-secondary btn-lg" id="seven" onClick={() => handleNumberClick('7')}>
+            7
           </button>
-          <button id="three" className="button" onClick={() => handleNumberClick('3')}>
+        </div>
+        
+         <div className="col">
+          <button className="btn btn-secondary btn-lg" id="subtract" onClick={() => handleOperatorClick('-')}>
+            -
+          </button>
+        </div>
+      </div>
+      <div className="row">
+
+      <div className="col">
+          <button className="btn btn-secondary btn-lg" id="six" onClick={() => handleNumberClick('6')}>
+            6
+          </button>
+        </div>
+        <div className="col">
+          <button className="btn btn-secondary btn-lg" id="five" onClick={() => handleNumberClick('5')}>
+            5
+          </button>
+        </div>
+        
+        <div className="col">
+          <button className="btn btn-secondary btn-lg" id="four" onClick={() => handleNumberClick('4')}>
+            4
+          </button>
+        </div>
+         <div className="col">
+          <button className="btn btn-secondary btn-lg" id="decimal" onClick={handleDecimalClick}>
+            .
+          </button>
+        </div>
+      </div>
+      <div className="row">
+      <div className="col">
+          <button className="btn btn-secondary btn-lg" id="three" onClick={() => handleNumberClick('3')}>
             3
           </button>
         </div>
-        <div className="row">
-          <button id="zero" className="button" onClick={() => handleNumberClick('0')}>
+       
+        <div className="col">
+          <button className="btn btn-secondary btn-lg" id="two" onClick={() => handleNumberClick('2')}>
+            2
+          </button>
+        </div>
+        <div className="col">
+          <button className="btn btn-secondary btn-lg" id="one" onClick={() => handleNumberClick('1')}>
+            1
+          </button>
+        </div>
+        
+        <div className="col">
+          <button className="btn btn-secondary btn-lg" id="zero" onClick={() => handleNumberClick('0')}>
             0
           </button>
-          <button id="decimal" className="button" onClick={handleDecimalClick}>
-            .
-          </button>
-          <button id="equals" className="button" onClick={handleEqualsClick}>
+        </div>
+      </div>
+      <div className="row">
+        <div className="col">
+          <button className="btn btn-primary btn-lg" id="equals" onClick={handleEqualsClick}>
             =
           </button>
         </div>
       </div>
     </div>
-  );
+  </div>
+);
+
 };
 
-export default Calculator;
+export default App;
